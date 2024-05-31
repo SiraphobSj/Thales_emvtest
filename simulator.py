@@ -28,7 +28,7 @@ def try_read(timeout=5):
         txn_code, rsp_code = emv.parse_present_hdr(rsp[13:21])
         txn_code_str = txn_code.decode('utf8')
         rsp_code_str = rsp_code.decode('utf8')
-        print(f'txn_code:{txn_code_str}, rsp_code:{rsp_code_str}')
+        log.debug(f'txn_code:{txn_code_str}, rsp_code:{rsp_code_str}')
         fields = emv.dec_fields(rsp[21:len(rsp)-2])
         
         for k, v in fields.items():
@@ -59,6 +59,8 @@ if __name__ == '__main__':
     if argc > 1:
         test = sys.argv[1]
     if argc > 2:
+        if len(sys.argv[2]) % 2 != 0:
+            raise ValueError("Hex string must have an even length")
         data = bytes.fromhex(sys.argv[2])
 
     if test == "tap":
@@ -197,22 +199,22 @@ if __name__ == '__main__':
 
         http_req = helper.form_tlv(req)
         content = base64.b64encode(bytes(http_req))
-        print(content)
+        log.debug(f"{content}")
 
         host = config.get('KLD', 'host', fallback='127.0.0.1:5000')
         url = f"http://{host}/kld/scd/key"
         http_rsp = requests.post(url, data=content)
-        print(http_rsp)
+        log.debug(f"{http_rsp}")
 
         buffer = base64.b64decode(http_rsp.content)
         rsp = helper.extract_tlv(buffer)
         for k, v in rsp.items():
             try:
-                print(f"{k:02x} str: {v.decode()}")
+                log.debug(f"{k:02x} str: {v.decode()}")
             except:
-                print(f"{k:02x} hex: {v.hex()}")
+                log.debug(f"{k:02x} hex: {v.hex()}")
 
-        print(rsp[0x32])
+        log.debug(f"{rsp[0x32]}")
         reader.update_keys(bytes.fromhex(rsp[0x32][10:].decode()))
         try_read()
 

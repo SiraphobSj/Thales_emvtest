@@ -271,7 +271,7 @@ class EMVReader():
         self.write(msg, len(msg))
 
     def tm_signature(self, data):
-        log.debug(f'data:{data}')
+        log.debug(f'data:{data} len:{len(data)}')
         fields = []
 
         # TODO: if data is hexstring or bytes

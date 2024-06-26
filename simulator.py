@@ -148,17 +148,33 @@ if __name__ == '__main__':
         try:
             reader.heartbeat(2)
             fields = try_read()
+
+            tmp = fields['U7'][1]
+            tmp = bytes.fromhex(tmp.decode())
+            tkk_kcv = bytes(tmp)
+            log.debug(f"tkk_kcv={tkk_kcv}")
+            log.debug(f"tkk_kcv.hex()={tkk_kcv.hex()}")
+
             tmp = fields['UB'][1]
+            tmp = bytes.fromhex(tmp.decode())
             emk_kcv = bytes(tmp)
+            log.debug(f"emk_kcv={emk_kcv}")
+            log.debug(f"emk_kcv.hex()={emk_kcv.hex()}")
 
-            #tmp = fields['U7'][1]
-            #tkk_kcv = bytes(tmp)
+            tmp = fields['UK'][1]
+            tmp = bytes.fromhex(tmp.decode())
+            mac_kcv = bytes(tmp)
+            log.debug(f"mac_kcv={mac_kcv}")
+            log.debug(f"mac_kcv.hex()={mac_kcv.hex()}")
 
-            #tmp = fields['UK'][1]
-            #mac_kcv = bytes(tmp)
+            tmp = fields['U3'][1]
+            # tmp = bytes.fromhex(tmp.decode())
+            ktrex_kcv = bytes(tmp)
+            log.debug(f"ktrex_kcv={ktrex_kcv}")
             
-            tmp = config.get('KLD', 'ktrexKcv', fallback='E43CF3')
-            ktrex_kcv = str.encode(tmp)
+            # tmp = config.get('KLD', 'ktrexKcv', fallback='E43CF3')
+            # ktrex_kcv = str.encode(tmp)
+            # log.debug(f"ktrex_kcv={ktrex_kcv}")
         except:
             pass
 
@@ -199,12 +215,12 @@ if __name__ == '__main__':
 
         http_req = helper.form_tlv(req)
         content = base64.b64encode(bytes(http_req))
-        log.debug(f"{content}")
+        log.debug(f"content={content}")
 
         host = config.get('KLD', 'host', fallback='127.0.0.1:5000')
         url = f"http://{host}/kld/scd/key"
         http_rsp = requests.post(url, data=content)
-        log.debug(f"{http_rsp}")
+        log.debug(f"http_rsp={http_rsp}")
 
         buffer = base64.b64decode(http_rsp.content)
         rsp = helper.extract_tlv(buffer)
@@ -214,7 +230,7 @@ if __name__ == '__main__':
             except:
                 log.debug(f"{k:02x} hex: {v.hex()}")
 
-        log.debug(f"{rsp[0x32]}")
+        log.debug(f"rsp[0x32]={rsp[0x32]}")
         reader.update_keys(bytes.fromhex(rsp[0x32][10:].decode()))
         try_read()
 

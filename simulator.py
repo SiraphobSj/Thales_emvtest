@@ -65,7 +65,8 @@ if __name__ == '__main__':
 
     if test == "tap":
         reader.transit_tap()
-        try_read()
+        try_read()  # txn 39
+        try_read()  # txn 35
     elif test == "cancel":
         reader.cancel()
         try_read()

@@ -13,24 +13,27 @@ class BaseSimulator():
         log.info("on_detected")
 
     def on_tapped(self, fields):
-        log.info("on_tapped")
-        for field in fields:
-            tag = field[0]
-            taglen = field[1]
-            value = field[2]
-            if tag == b'TE':
-                log.info(f"{tag.decode()} {taglen:4d} {value}")
+        log.debug("BASE::on_tapped")
+        for key, field in fields.items():
+            tag = key
+            taglen = field[0]
+            value = field[1]
+            try:
+                log.info(f"{tag} {taglen:4d} {value.decode()}")
+            except: # tag TE
                 #TODO: decode TLV?
-            else:
-                log.info(f"{tag.decode()} {taglen:4d} {value.decode()}")
+                log.info(f"{tag} {taglen:4d} {value.hex()}")
 
     def on_heartbeat(self, fields):
-        log.info("on_heartbeat")
-        for field in fields:
-            tag = field[0]
-            taglen = field[1]
-            value = field[2]
-            log.info(f"{tag.decode()} {taglen:4d} {value.decode()}")
+        log.debug("BASE::on_heartbeat")
+        for key, field in fields.items():
+            tag = key
+            taglen = field[0]
+            value = field[1]
+            try:
+                log.info(f"{tag} {taglen:4d} {value.decode()}")
+            except:
+                log.info(f"{tag} {taglen:4d} {value.hex()}")
 
     def run(self):
         th = EMVThread(reader=self.reader,

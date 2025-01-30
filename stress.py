@@ -9,14 +9,21 @@ class StressSimulator(BaseSimulator):
         self.timeout = timeout
 
     def on_tapped(self, fields):
+        log.debug("Stress::on_tapped - IN")
         super().on_tapped(fields)
         self.reader.transit_tap()
+        log.debug("Stress::on_tapped - OUT")
 
     def on_heartbeat(self, fields):
         super().on_heartbeat(fields)
-        for field in fields:
-            if field[0] == b'TG' and field[2] == b'0':
-                self.reader.transit_tap()
+        for key, field in fields.items():
+            if key == "TG":
+                if  field[1] == b'0':
+                    log.error("Stress::on_heartbeat::transit_tap - IN")
+                    self.reader.transit_tap()
+                    log.error("Stress::on_heartbeat::transit_tap - OUT")
+                else:
+                    log.debug("Already polling")
 
 
     def run(self):
@@ -29,6 +36,7 @@ class StressSimulator(BaseSimulator):
                 daemon=True)
         th.start()
 
+        log.info("Stress::First transit_tap")
         self.reader.transit_tap()
 
         try:

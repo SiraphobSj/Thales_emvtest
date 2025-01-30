@@ -121,6 +121,7 @@ class EMVReader():
         return (not self.ser.is_open)
 
     def transit_tap(self, corr_id=None):
+        log.debug(f'EMVThread::transit_tap()1')
         fields = []
 
         if corr_id == None:
@@ -180,6 +181,7 @@ class EMVReader():
         msg = self.form_command(TRANSIT_TAP_TXN_CODE, fields)
         self.write(msg, len(msg))
     def transit_tap(self, corr_id=None):
+        log.debug(f'EMVThread::transit_tap()2')
         fields = []
 
         if corr_id == None:
@@ -241,6 +243,7 @@ class EMVReader():
         self.write(msg, len(msg))
 
     def heartbeat(self, req_type=None):
+        log.debug(f'EMVThread::heartbeat()')
         fields = []
 
         if req_type != None:
@@ -398,11 +401,13 @@ class EMVThread(threading.Thread):
 
                 txn_code_str = txn_code.decode('utf8')
                 rsp_code_str = rsp_code.decode('utf8')
-                log.debug(f'txn_code:{txn_code_str}, rsp_code:{rsp_code_str}')
+                log.error(f'txn_code:{txn_code_str}, rsp_code:{rsp_code_str}')
 
                 if txn_code_str == TRANSIT_TAP_TXN_CODE:
+                    log.debug(f'EMVThread::on_tapped - IN')
                     if self.on_tapped != None:
                         self.on_tapped(fields)
+                        log.debug(f'EMVThread::on_tapped - OUT')
                 #elif txn_code_str == CANCEL_TXN_CODE:
                 elif txn_code_str == HEARTBEAT_TXN_CODE:
                     if self.on_heartbeat != None:

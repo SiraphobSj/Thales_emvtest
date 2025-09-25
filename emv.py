@@ -239,11 +239,12 @@ class EMVReader():
         self.write(msg, len(msg))
 
     def cancel(self):
+        log.debug(f'EMVThread::cancel()')
         msg = self.form_command(CANCEL_TXN_CODE)
         self.write(msg, len(msg))
 
     def heartbeat(self, req_type=None):
-        log.debug(f'EMVThread::heartbeat()')
+        log.debug(f'EMVThread::heartbeat(){req_type}')
         fields = []
 
         if req_type != None:
@@ -259,6 +260,7 @@ class EMVReader():
         self.write(msg, len(msg))
 
     def reboot(self, req_type=None):
+        log.debug(f'EMVThread::reboot(){req_type}')
         fields = []
 
         if req_type != None:
@@ -270,6 +272,7 @@ class EMVReader():
         self.write(msg, len(msg))
 
     def read_bsam_sn(self):
+        log.debug(f'EMVThread::read_bsam_sn()')
         msg = self.form_command(READ_BSAM_SN_TXN_CODE)
         self.write(msg, len(msg))
 

@@ -3,6 +3,7 @@ import configparser
 import base64
 import requests
 
+import time
 import log
 import emv
 from datetime import datetime
@@ -69,35 +70,35 @@ if __name__ == '__main__':
         try_read()  # txn 35
     elif test == "cancel":
         reader.cancel()
-        try_read()
-    elif test == "heartbeat":
+        # try_read()
+    elif test == "heartbeat" or test == "hb":
         reader.heartbeat()
         try_read()
-    elif test == "heartbeat-live":
+    elif test == "heartbeat-live" or test == "hb-live" or test == "hb0":
         reader.heartbeat(0)
         try_read()
-    elif test == "heartbeat-ver":
+    elif test == "heartbeat-ver" or test == "hb-ver" or test == "hb1":
         reader.heartbeat(1)
         try_read()
-    elif test == "heartbeat-key":
+    elif test == "heartbeat-key" or test == "hb-key" or test == "hb2":
         reader.heartbeat(2)
         try_read()
     elif test == "download":
         reader.download()
         try_read()
-    elif test == "reboot":
+    elif test == "reboot" or test == "rb":
         reader.reboot()
-        try_read()
-    elif test == "reboot-only":
+        # try_read()
+    elif test == "reboot-only" or test == "reboot0":
         reader.reboot(0)
         #try_read()
-    elif test == "reboot-clean-buf":
+    elif test == "reboot-clean-buf" or test == "reboot1":
         reader.reboot(1)
         #try_read()
-    elif test == "reboot-clean-rej":
+    elif test == "reboot-clean-rej" or test == "reboot2":
         reader.reboot(2)
         #try_read()
-    elif test == "reboot-clean-all":
+    elif test == "reboot-clean-all" or test == "reboot3":
         reader.reboot(3)
         #try_read()
     elif test == "readsn":
@@ -235,7 +236,15 @@ if __name__ == '__main__':
         reader.update_keys(bytes.fromhex(rsp[0x32][10:].decode()))
         try_read()
 
-
+    elif test == "toggle":
+        while True:
+            reader.transit_tap()
+            time.sleep(1)
+            reader.cancel()
+            time.sleep(1)
+    elif test == "read":
+        while True:
+            try_read()
     elif test == "stress":
         sim = StressSimulator(reader, 3)
         sim.run()
